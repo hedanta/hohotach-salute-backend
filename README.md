@@ -16,7 +16,7 @@ docker-compose -f docker-compose-local.yaml up -d
 ```
 3. Миграции 
 ```
-alembic init -t async migarions
+alembic init -t async migrations
 ```
 - В alembic.ini нужно задать адрес базы данных, в которую будем катать миграции.
 - Дальше идём в папку с миграциями и открываем env.py, там вносим изменения в блок, где написано 
