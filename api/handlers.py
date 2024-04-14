@@ -35,7 +35,6 @@ async def create_user(
 async def _add_joke(body: AddJoke, session) -> ShowJoke:
     async with session.begin():
         joke_dal = JokeDAL(session)
-        print(f"hui: {body.category_id}")
         joke = await joke_dal.add_joke(content =body.content, alias=body.alias, category_id=body.category_id)
         return ShowJoke(content=joke.content, 
                             id=joke.id,
