@@ -1,25 +1,27 @@
+from __future__ import annotations
+
 from typing import Union, List
 from uuid import UUID
 
 from sqlalchemy import select
-from sqlalchemy import delete
-from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
+from sqlalchemy.ext.asyncio import AsyncSession
 
-from .models import  Favourite, User, Joke
+from .models import Favourite, User, Joke
 from sqlalchemy.orm.exc import NoResultFound
+
 
 class UserDAL:
     def __init__(self, db_session: AsyncSession):
         self.db_session = db_session
 
     async def get_or_create_user(
-        self,
-        user_id: int,
-        name: str
+            self,
+            user_id: int,
+            name: str
     ) -> User:
         '''Создает или возвращает пользователя по его id'''
         existing_user_query = select(User).filter_by(id=user_id)
-        
+
         result = await self.db_session.execute(existing_user_query)
         existing_user = result.scalar()
 
@@ -31,7 +33,7 @@ class UserDAL:
                 username=name
             )
             self.db_session.add(new_user)
-            await self.db_session.flush() 
+            await self.db_session.flush()
             return new_user
 
 
@@ -40,37 +42,36 @@ class FavJokeDAL:
         self.db_session = db_session
 
     async def add_fav_joke(
-        self,
-        user_id: int,
-        joke_id: int
+            self,
+            user_id: int,
+            joke_id: int
     ) -> Favourite:
-        existing_fav_joke = select(Favourite).filter_by(user_id = user_id, joke_id = joke_id)
+        existing_fav_joke = select(Favourite).filter_by(user_id=user_id, joke_id=joke_id)
         result = await self.db_session.execute(existing_fav_joke)
         existing_fav_joke = result.scalar()
         if existing_fav_joke:
             return existing_fav_joke
         else:
-            new_fav_joke = Favourite(user_id = user_id, joke_id = joke_id)
+            new_fav_joke = Favourite(user_id=user_id, joke_id=joke_id)
             self.db_session.add(new_fav_joke)
             await self.db_session.flush()
             return new_fav_joke
-    
+
     async def get_fav_joke(
-        self,
-        user_id : int 
+            self,
+            user_id: int
     ) -> List[Joke]:
         user_favs_query = select(Joke).join(Joke.favourites).where(Favourite.user_id == user_id)
         result = await self.db_session.execute(user_favs_query)
         result = result.scalars().all()
         return result
-        
-        
+
 
 class JokeDAL:
     def __init__(self, db_session: AsyncSession):
         self.db_session = db_session
 
-    async def get_joke_by_id(self, joke_id: int) -> Joke|None:
+    async def get_joke_by_id(self, joke_id: int) -> Joke | None:
         """
         Retrieve a joke from the database by its ID.
         """

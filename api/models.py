@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from pydantic import BaseModel
 
 class TunedModel(BaseModel):
@@ -22,14 +24,20 @@ class ShowJoke(BaseModel):
     category_id: int | None = None
 
 
+class ShowApiJoke(BaseModel):
+    content: str
+
+
 class AddJoke(BaseModel):
     content: str
     alias: str
     category_id: int | None = None
 
+
 class AddFavJoke(BaseModel):
     jokeBody : AddJoke
     user: CreateUser
+
 
 class FavJoke(BaseModel):
     user_id: int

@@ -22,4 +22,4 @@ async def get_db() -> Generator:
         session: AsyncSession = async_session()
         yield session
     finally:
-        await session.close()       
+        await session.close()

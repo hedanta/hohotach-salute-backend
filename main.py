@@ -1,6 +1,5 @@
 import uvicorn
 from fastapi import FastAPI
-from fastapi.routing import APIRouter
 from api.handlers import *
 
 app = FastAPI(title="hohotach")
