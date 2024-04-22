@@ -1,10 +1,13 @@
 from fastapi import APIRouter
 import json
 
+from fastapi.encoders import jsonable_encoder
+
 from .models import AddFavJoke, AddJoke, CreateUser, FavJoke, ShowJoke, ShowApiJoke, ShowUser
 from fastapi import Depends
 from db.dals import *
 from db.session import get_db
+from fastapi.responses import JSONResponse
 from fastapi import Query
 
 import httpx
@@ -41,7 +44,7 @@ async def _add_joke(body: AddJoke, session) -> ShowJoke:
         joke_dal = JokeDAL(session)
         joke = await joke_dal.add_joke(content=body.content, alias=body.alias)
         return ShowJoke(content=joke.content,
-                        id=joke.id,
+                        joke_id=joke.id,
                         alias=joke.alias)
 
 
@@ -70,10 +73,10 @@ async def _get_joke_by_id(id: int, session) -> Union[ShowJoke, None]:
 @user_router.get("/get_joke_by_id", response_model=Union[ShowJoke, None],
                  description='тоже не для фронта')
 async def get_joke(
-        id: int,
+        joke_id: int,
         db: AsyncSession = Depends(get_db)
 ) -> Union[ShowJoke, None]:
-    return await _get_joke_by_id(id, db)
+    return await _get_joke_by_id(joke_id, db)
 
 
 async def _add_fav_joke(body: AddFavJoke, session) -> FavJoke:
@@ -98,17 +101,16 @@ async def add_fav_joke(
     return await _add_fav_joke(body, db)
 
 
-# здесь я уже задолбался делать эти приватные методы, поэтому будет без них   
 @user_router.get("/get_fav_joke", response_model=List[ShowJoke])
-async def get_fav_joke(id: int,
+async def get_fav_joke(joke_id: int,
                        db: AsyncSession = Depends(get_db)):
     fav_joke_dal = FavJokeDAL(db)
-    jokes = await fav_joke_dal.get_fav_joke(id)
+    jokes = await fav_joke_dal.get_fav_joke(joke_id)
 
     show_jokes_list = []
     for joke in jokes:
         show_jokes_list.append(ShowJoke(content=joke.content,
-                                        id=joke.id,
+                                        joke_id=joke.id,
                                         alias=joke.alias))
     return show_jokes_list
 
@@ -122,10 +124,11 @@ async def get_joke() -> ShowApiJoke:
         return ShowApiJoke(content=content)'''
 
 
-@user_router.get("/get_joke_from_api", response_model=None)
-async def get_joke() -> str:
+@user_router.get("/get_joke_from_api", response_model=ShowApiJoke)
+async def get_joke():
     async with httpx.AsyncClient() as client:
         response = await client.get(JOKE_URL)
-        joke = response.text
-        res = joke[12:-3]
-        return res
+        content = response.text[12:-3]
+        joke_item = Joke(content=content)
+        joke_json = jsonable_encoder(joke_item)
+        return JSONResponse(content=joke_json)

@@ -18,8 +18,8 @@ class CreateUser(BaseModel):
 
 
 class ShowJoke(BaseModel):
+    joke_id: int
     content: str
-    id: int
     alias: str
 
 
