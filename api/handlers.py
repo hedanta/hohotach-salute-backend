@@ -39,11 +39,10 @@ async def create_user(
 async def _add_joke(body: AddJoke, session) -> ShowJoke:
     async with session.begin():
         joke_dal = JokeDAL(session)
-        joke = await joke_dal.add_joke(content=body.content, alias=body.alias, category_id=body.category_id)
+        joke = await joke_dal.add_joke(content=body.content, alias=body.alias)
         return ShowJoke(content=joke.content,
                         id=joke.id,
-                        alias=joke.alias,
-                        category_id=joke.category_id)
+                        alias=joke.alias)
 
 
 @user_router.post("/add_joke",
@@ -62,11 +61,10 @@ async def _get_joke_by_id(id: int, session) -> Union[ShowJoke, None]:
         joke_dal = JokeDAL(session)
         joke = await joke_dal.get_joke_by_id(joke_id=id)
         if joke:
-            print(joke.content, joke.id, joke.alias, joke.category_id)
+            print(joke.content, joke.id, joke.alias)
             return ShowJoke(content=joke.content,
                             id=joke.id,
-                            alias=joke.alias,
-                            category_id=joke.category_id)
+                            alias=joke.alias)
 
 
 @user_router.get("/get_joke_by_id", response_model=Union[ShowJoke, None],
@@ -96,7 +94,7 @@ async def _add_fav_joke(body: AddFavJoke, session) -> FavJoke:
 async def add_fav_joke(
         body: AddFavJoke,
         db: AsyncSession = Depends(get_db)
-) -> ShowJoke:
+):
     return await _add_fav_joke(body, db)
 
 
@@ -107,13 +105,12 @@ async def get_fav_joke(id: int,
     fav_joke_dal = FavJokeDAL(db)
     jokes = await fav_joke_dal.get_fav_joke(id)
 
-    showjokes_list = []
+    show_jokes_list = []
     for joke in jokes:
-        showjokes_list.append(ShowJoke(content=joke.content,
-                                       id=joke.id,
-                                       alias=joke.alias,
-                                       category_id=joke.category_id))
-    return showjokes_list
+        show_jokes_list.append(ShowJoke(content=joke.content,
+                                        id=joke.id,
+                                        alias=joke.alias))
+    return show_jokes_list
 
 
 '''@user_router.get("/get_joke_from_api", response_model=ShowApiJoke)
@@ -131,5 +128,4 @@ async def get_joke() -> str:
         response = await client.get(JOKE_URL)
         joke = response.text
         res = joke[12:-3]
-        print(res)
         return res

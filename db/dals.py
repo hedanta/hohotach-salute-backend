@@ -81,7 +81,7 @@ class JokeDAL:
         if joke:
             return joke
 
-    async def add_joke(self, content: str, alias: str = None, category_id: int = None) -> Joke:
+    async def add_joke(self, content: str, alias: str = None) -> Joke:
         """
         Create and add a new joke to the database if it doesn't already exist. Alias and category_id are optional.
         """
@@ -95,7 +95,7 @@ class JokeDAL:
             return existing_joke
         else:
             # If the joke does not exist, create and add it
-            new_joke = Joke(content=content, alias=alias, category_id=category_id)
+            new_joke = Joke(content=content, alias=alias)
             self.db_session.add(new_joke)
             await self.db_session.flush()  # flush is used here to get the ID if needed immediately after
             return new_joke
@@ -108,6 +108,7 @@ class JokeDAL:
         await self.db_session.delete(joke)
         await self.db_session.flush()
 
+    '''
     async def update_joke_category(self, joke_id: int, category_id: int) -> None:
         """
         Пока не тестил
@@ -116,7 +117,8 @@ class JokeDAL:
         result = await self.db_session.execute(query)
         try:
             joke_to_update = result.scalar_one()
-            joke_to_update.category_id = category_id
+            # joke_to_update.category_id = category_id
             await self.db_session.flush()
         except NoResultFound:
             raise ValueError(f"No joke found with ID {joke_id}")
+    '''

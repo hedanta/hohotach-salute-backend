@@ -21,7 +21,6 @@ class ShowJoke(BaseModel):
     content: str
     id: int
     alias: str
-    category_id: int | None = None
 
 
 class ShowApiJoke(BaseModel):
@@ -31,11 +30,10 @@ class ShowApiJoke(BaseModel):
 class AddJoke(BaseModel):
     content: str
     alias: str
-    category_id: int | None = None
 
 
 class AddFavJoke(BaseModel):
-    jokeBody : AddJoke
+    jokeBody: AddJoke
     user: CreateUser
 
 

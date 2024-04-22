@@ -11,22 +11,21 @@ class User(Base):
     username = Column(String, nullable=True)
     favourites = relationship("Favourite", back_populates="users")
 
-
+'''
 class JokesCategory(Base):
     __tablename__ = 'jokes_category'
     category_id = Column(Integer, primary_key=True)
     name = Column(String, nullable=True)
     jokes = relationship("Joke", back_populates="jokes_category")
-
+'''
 
 class Joke(Base):
     __tablename__ = 'jokes'
     id = Column(Integer, primary_key=True)
     content = Column(Text, nullable=False)
     alias = Column(Text, nullable=True)
-    category_id = Column(Integer, ForeignKey('jokes_category.category_id'), nullable=True)
-    jokes_category = relationship("JokesCategory", back_populates="jokes")
     favourites = relationship("Favourite", back_populates="jokes")
+    # category_id = Column(Integer, ForeignKey('jokes_category.category_id'), nullable=True)
 
 
 class Favourite(Base):
