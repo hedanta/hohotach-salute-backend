@@ -1,6 +1,9 @@
 from __future__ import annotations
 
+import uuid
+
 from pydantic import BaseModel
+
 
 class TunedModel(BaseModel):
     class Config:
@@ -8,35 +11,25 @@ class TunedModel(BaseModel):
 
 
 class ShowUser(TunedModel):
-    user_id: int
-    name: str
+    user_id: str
+    # name: str
 
 
 class CreateUser(BaseModel):
-    user_id: int
-    name: str
+    user_id: str
+    # name: str
 
 
 class ShowJoke(BaseModel):
-    joke_id: int
+    joke_id: uuid.UUID
     content: str
-    alias: str
-
-
-class ShowApiJoke(BaseModel):
-    content: str
+    alias: str | None = None
 
 
 class AddJoke(BaseModel):
     content: str
-    alias: str
+    alias: str | None = None
 
 
-class AddFavJoke(BaseModel):
-    jokeBody: AddJoke
-    user: CreateUser
-
-
-class FavJoke(BaseModel):
-    user_id: int
-    joke_id: int
+class ShowFavJoke(BaseModel):
+    content: str

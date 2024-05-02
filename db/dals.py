@@ -1,8 +1,10 @@
 from __future__ import annotations
 
+import uuid
 from typing import Union, List
 from uuid import UUID
 
+import sqlalchemy
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -16,8 +18,7 @@ class UserDAL:
 
     async def get_or_create_user(
             self,
-            user_id: int,
-            name: str
+            user_id: str
     ) -> User:
         '''Создает или возвращает пользователя по его id'''
         existing_user_query = select(User).filter_by(id=user_id)
@@ -29,8 +30,7 @@ class UserDAL:
             return existing_user
         else:
             new_user = User(
-                id=user_id,
-                username=name
+                id=user_id
             )
             self.db_session.add(new_user)
             await self.db_session.flush()
@@ -43,8 +43,8 @@ class FavJokeDAL:
 
     async def add_fav_joke(
             self,
-            user_id: int,
-            joke_id: int
+            user_id: str,
+            joke_id: UUID
     ) -> Favourite:
         existing_fav_joke = select(Favourite).filter_by(user_id=user_id, joke_id=joke_id)
         result = await self.db_session.execute(existing_fav_joke)
@@ -57,21 +57,30 @@ class FavJokeDAL:
             await self.db_session.flush()
             return new_fav_joke
 
-    async def get_fav_joke(
+    async def get_user_fav_jokes(
             self,
-            user_id: int
-    ) -> List[Joke]:
+            user_id: str
+    ):
         user_favs_query = select(Joke).join(Joke.favourites).where(Favourite.user_id == user_id)
         result = await self.db_session.execute(user_favs_query)
         result = result.scalars().all()
         return result
+
+    async def delete_fav_joke(
+            self,
+            joke_id: UUID
+    ):
+        query = sqlalchemy.delete(Favourite).where(Favourite.joke_id == joke_id)
+        await self.db_session.execute(query)
+        await self.db_session.flush()
+
 
 
 class JokeDAL:
     def __init__(self, db_session: AsyncSession):
         self.db_session = db_session
 
-    async def get_joke_by_id(self, joke_id: int) -> Joke | None:
+    async def get_joke_by_id(self, joke_id: UUID) -> Joke | None:
         """
         Retrieve a joke from the database by its ID.
         """
@@ -81,7 +90,10 @@ class JokeDAL:
         if joke:
             return joke
 
-    async def add_joke(self, content: str, alias: str = None) -> Joke:
+    async def add_joke(self,
+                       content: str,
+                       alias: str = None
+    ) -> Joke:
         """
         Create and add a new joke to the database if it doesn't already exist. Alias and category_id are optional.
         """
@@ -100,7 +112,7 @@ class JokeDAL:
             await self.db_session.flush()  # flush is used here to get the ID if needed immediately after
             return new_joke
 
-    async def delete_joke(self, joke_id: int) -> None:
+    async def delete_joke(self, joke_id: UUID) -> None:
         """
         Delete a joke from the database by its ID.
         """
@@ -109,7 +121,7 @@ class JokeDAL:
         await self.db_session.flush()
 
     '''
-    async def update_joke_category(self, joke_id: int, category_id: int) -> None:
+    async def update_joke_category(self, joke_id: UUID, category_id: int) -> None:
         """
         Пока не тестил
         """
