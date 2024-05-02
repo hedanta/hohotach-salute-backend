@@ -5,7 +5,7 @@
 Приложение позволяет выводить пользователю на экран анекдоты с помощью графического интерфейса или голосового помощника. Анекдоты загружаются с открытых API. Пользователь может сохранять анекдоты в избранное.
 
 ## Запуск
-0. Нужен [docker](!https://docs.docker.com/engine/install/)
+0. Нужен [docker](https://docs.docker.com/engine/install/)
 1. Установить библиотеки
 ```
 pip install -r requirements.txt
@@ -23,8 +23,14 @@ alembic init -t async migrations
 
 ```
 from myapp import mymodel
+target_metadata = mymodel.Base.metadata
 ```
-
+меняем на
+```
+from db.models import Base
+target_metadata = Base.metadata
+# target_metadata = None
+```
 - Вводим для создания миграции: 
 ```
 alembic revision --autogenerate -m "comment"
@@ -34,4 +40,7 @@ alembic revision --autogenerate -m "comment"
 ```
 alembic upgrade heads
 ```
-4. Запускаем саму программу
+4. Запускаем программу:
+```
+uvicorn main:app --reload
+```
