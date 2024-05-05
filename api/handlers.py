@@ -37,11 +37,11 @@ async def create_user(
 
 @user_router.post("/add_fav_joke")
 async def add_fav_joke(
-        body: AddJoke,
+        content: str,
         user_id: str,
         db: AsyncSession = Depends(get_db)
 ):
-    return await _add_fav_joke(body, user_id, db)
+    return await _add_fav_joke(content, user_id, db)
 
 
 @user_router.get("/get_fav_jokes", response_model=List[ShowJoke])

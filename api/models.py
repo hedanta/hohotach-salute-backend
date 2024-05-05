@@ -12,12 +12,10 @@ class TunedModel(BaseModel):
 
 class ShowUser(TunedModel):
     user_id: str
-    # name: str
 
 
 class CreateUser(BaseModel):
     user_id: str
-    # name: str
 
 
 class ShowJoke(BaseModel):
@@ -28,6 +26,11 @@ class ShowJoke(BaseModel):
 
 class AddJoke(BaseModel):
     content: str
+    alias: str | None = None
+
+
+class FavJoke(BaseModel):
+    joke_id: uuid.UUID
     alias: str | None = None
 
 

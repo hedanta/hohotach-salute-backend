@@ -2,7 +2,16 @@ from api.models import AddJoke
 from api.models import CreateUser
 from api.models import ShowJoke
 from api.models import ShowUser
+from api.models import FavJoke
 from db.dals import *
+
+
+def _generate_alias(
+        content: str
+):
+    alias = content[:25]
+    alias += "..."
+    return alias
 
 
 async def _get_or_create_user(user_id: str, session) -> ShowUser:
@@ -12,16 +21,6 @@ async def _get_or_create_user(user_id: str, session) -> ShowUser:
             user_id=user_id
         )
         return ShowUser(user_id=user.id)
-
-
-async def _add_joke(
-        body: AddJoke,
-        session
-) -> UUID:
-    async with session.begin():
-        joke_dal = JokeDAL(session)
-        joke = await joke_dal.add_joke(content=body.content, alias=body.alias)
-        return joke.id
 
 
 async def _get_joke_by_id(
@@ -37,19 +36,31 @@ async def _get_joke_by_id(
                             alias=joke.alias)
 
 
+async def _add_joke(
+        content: str,
+        session
+) -> UUID:
+    async with session.begin():
+        alias = str(_generate_alias(content))
+        joke_dal = JokeDAL(session)
+        joke = await joke_dal.add_joke(content=content, alias=alias)
+        return joke.id
+
+
 async def _add_fav_joke(
-        body: AddJoke,
+        content: str,
         user_id: str,
         session
 ):
-    user = await _get_or_create_user(CreateUser(user_id=user_id), session)
-    joke = await _add_joke(AddJoke(content=body.content,
-                                   alias=body.alias),
+    user = await _get_or_create_user(user_id, session)
+    joke = await _add_joke(content,
                            session)
+    alias = str(_generate_alias(content))
 
     async with session.begin():
         fav_joke_dal = FavJokeDAL(session)
         fav_joke = await fav_joke_dal.add_fav_joke(user_id, joke)
+        return FavJoke(joke_id=fav_joke.joke_id, alias=alias)
 
 
 async def _get_fav_jokes(
