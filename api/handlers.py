@@ -1,4 +1,5 @@
 import httpx
+import re
 
 from fastapi import APIRouter
 from fastapi.encoders import jsonable_encoder
@@ -21,9 +22,12 @@ JOKE_URL = 'http://rzhunemogu.ru/RandJSON.aspx?CType=1'
 async def get_joke():
     async with httpx.AsyncClient() as client:
         response = await client.get(JOKE_URL)
-        content = response.text[12:-3]
+        content = response.text[12:-2]
+        pattern = r'\r\n(?![A-Я-"])'
+        content = re.sub(pattern, ' ', content)
         joke_item = Joke(content=content)
         joke_json = jsonable_encoder(joke_item)
+        print(repr(content))
         return JSONResponse(content=joke_json)
 
 

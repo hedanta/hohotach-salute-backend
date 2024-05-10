@@ -9,7 +9,10 @@ from db.dals import *
 def _generate_alias(
         content: str
 ):
-    alias = content[:25]
+    alias = content[:20]
+    for i in range(20):
+        if alias[i] == '\n':
+            alias = alias[:i-1] + ' ' + alias[i+1:]
     alias += "..."
     return alias
 
