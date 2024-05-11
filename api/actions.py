@@ -10,9 +10,12 @@ def _generate_alias(
         content: str
 ):
     alias = content[:20]
-    for i in range(20):
+    for i in range(19):
         if alias[i] == '\n':
-            alias = alias[:i-1] + ' ' + alias[i+1:]
+            if i == 18:
+                alias = alias[:i-1]
+            else:
+                alias = alias[:i-1] + ' ' + alias[i+1:]
     alias += "..."
     return alias
 
