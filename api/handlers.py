@@ -1,11 +1,11 @@
 import httpx
-import re
 
 from fastapi import APIRouter
 from fastapi.encoders import jsonable_encoder
 from fastapi import Depends
 from fastapi.responses import JSONResponse
 
+from api.actions import _get_joke_from_api
 from api.actions import _get_or_create_user
 from api.actions import _add_fav_joke
 from api.actions import _get_fav_jokes
@@ -15,20 +15,17 @@ from db.session import get_db
 
 user_router = APIRouter()
 
-JOKE_URL = 'http://rzhunemogu.ru/RandJSON.aspx?CType=1'
-
 
 @user_router.get("/get_joke_from_api", response_model=None)
 async def get_joke():
-    async with httpx.AsyncClient() as client:
-        response = await client.get(JOKE_URL)
-        content = response.text[12:-2]
-        pattern = r'\r\n(?![A-Я-"])'
-        content = re.sub(pattern, ' ', content)
-        joke_item = Joke(content=content)
-        joke_json = jsonable_encoder(joke_item)
-        print(repr(content))
-        return JSONResponse(content=joke_json)
+    content = await _get_joke_from_api()
+
+    while 'http' in content:
+        content = await _get_joke_from_api()
+
+    joke_item = Joke(content=content)
+    joke_json = jsonable_encoder(joke_item)
+    return JSONResponse(content=joke_json)
 
 
 @user_router.post("/get_or_create_user", response_model=ShowUser)

@@ -1,3 +1,9 @@
+import httpx
+import re
+
+from fastapi.encoders import jsonable_encoder
+from fastapi.responses import JSONResponse
+
 from api.models import AddJoke
 from api.models import CreateUser
 from api.models import ShowJoke
@@ -5,6 +11,8 @@ from api.models import ShowUser
 from api.models import FavJoke
 from db.dals import *
 
+
+JOKE_URL = 'http://rzhunemogu.ru/RandJSON.aspx?CType=1'
 
 def _generate_alias(
         content: str
@@ -18,6 +26,16 @@ def _generate_alias(
                 alias = alias[:i-1] + ' ' + alias[i+1:]
     alias += "..."
     return alias
+
+
+async def _get_joke_from_api():
+    async with httpx.AsyncClient() as client:
+        response = await client.get(JOKE_URL)
+        content = response.text[12:-2]
+        pattern = r'\r\n(?![A-Я-"])'
+        content = re.sub(pattern, ' ', content)
+        return content
+
 
 
 async def _get_or_create_user(user_id: str, session) -> ShowUser:
