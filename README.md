@@ -10,6 +10,9 @@
 ```
 pip install -r requirements.txt
 ```
+P.S. <br> 
+если ставите на линукс, может возникнуть ошибка с psycopg2, поменяйте в requirements.txt psycopg2 на psycopg2-binary 
+
 2. Запустить контейнер:
 ```
 docker-compose -f docker-compose-local.yaml up -d
