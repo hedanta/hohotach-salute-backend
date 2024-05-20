@@ -6,7 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 app = FastAPI(title="hohotach")
 
 origins = [
-    'http://localhost:3000'
+        '*' #'http://localhost:3000'
 ]
 
 app.add_middleware(
