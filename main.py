@@ -1,7 +1,7 @@
 import uvicorn
 from fastapi import FastAPI
 from api.handlers import *
-from fastapi.middleware.cors import CORSMiddleware
+from starlette.middleware.cors import CORSMiddleware
 
 app = FastAPI(title="hohotach")
 

@@ -1,4 +1,5 @@
-version: "3.0"
+version: "3.8"
+
 services:
   db:
     container_name: "db"
@@ -10,8 +11,13 @@ services:
       - POSTGRES_DB=db
     ports:
       - "5432:5432"
-    networks:
-      - custom
-networks:
-  custom:
-    driver: bridge
+  app:
+    build:
+      context: .
+      dockerfile: dockerfile
+    container_name: back-container
+    command: uvicorn main:app --host 0.0.0.0 --port 8000 
+    ports:
+      - 8000:8000
+    depends_on:
+      - db
