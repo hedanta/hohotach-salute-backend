@@ -1,5 +1,7 @@
 import httpx
 import re
+from sqlalchemy import func
+import random 
 
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
@@ -28,13 +30,17 @@ def _generate_alias(
     return alias
 
 
-async def _get_joke_from_api():
-    async with httpx.AsyncClient() as client:
-        response = await client.get(JOKE_URL)
-        content = response.text[12:-2]
-        pattern = r'\r\n(?![A-Я-"])'
-        content = re.sub(pattern, ' ', content)
-        return content
+async def _get_joke_from_api(session):
+    # TODO: сделать по нормальному (когда-нибудь)
+    async with session.begin():
+        joke_dal = JokeDAL(session)
+        count_jokes = session.query(func.count(Joke.id)).scalar()
+        joke_id_random = random.randint(0, count_jokes)
+
+        joke = await joke_dal.get_joke_by_id(
+            joke_id= joke_id_random
+        )
+        return joke.content
 
 
 
