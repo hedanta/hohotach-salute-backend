@@ -22,8 +22,10 @@ async def get_joke():
 
     while 'http' in content:
         content = await _get_joke_from_api()
-
-    joke_item = Joke(content=content)
+    if content:
+        joke_item = Joke(content=content)
+    else:
+        joke_item = 'шуточки кончились'
     joke_json = jsonable_encoder(joke_item)
     return JSONResponse(content=joke_json)
 
