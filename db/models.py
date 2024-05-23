@@ -16,7 +16,7 @@ class User(Base):
 
 class Joke(Base):
     __tablename__ = 'jokes'
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    id = Column(Integer, primary_key=True)
     content = Column(Text, nullable=False)
     alias = Column(Text, nullable=True)
     favourites = relationship("Favourite", back_populates="jokes")
@@ -26,7 +26,7 @@ class Joke(Base):
 class Favourite(Base):
     __tablename__ = 'favourites'
     user_id = Column(String, ForeignKey('users.id'), primary_key=True)
-    joke_id = Column(UUID(as_uuid=True), ForeignKey('jokes.id'), primary_key=True)
+    joke_id = Column(Integer, ForeignKey('jokes.id'), primary_key=True)
     users = relationship("User", back_populates="favourites")
     jokes = relationship("Joke", back_populates="favourites")
 

@@ -2,7 +2,7 @@ from sqlalchemy import select
 import sqlalchemy as db 
 from sqlalchemy.orm import sessionmaker, Session
 import pandas as pd
-from .models import Joke
+from models import Joke
 
 
 class JokeLoader:
@@ -24,12 +24,13 @@ class JokeLoader:
         return alias
     
     def load_data_to_db(self, df: pd.DataFrame):
+        ''' Загружает всех клиентов из датафрейма df ''' 
         jokes = df['text'].to_list()
         
         for joke in jokes:
             new_joke = Joke(content=joke, alias = self._generate_alias(joke))
 
-            existing_joke_query = select(Joke).filter_by(content=new_joke)
+            existing_joke_query = select(Joke).filter_by(content=joke)
             result = self.db_session.execute(existing_joke_query)
             existing_joke = result.scalar()
 
@@ -39,7 +40,7 @@ class JokeLoader:
         self.db_session.flush()  # flush is used here to get the ID if needed immediately after
 
 if __name__ == '__main__':
-    engine = db.create_engine("postgresql+asyncpg://user:password@db/db",
+    engine = db.create_engine("postgresql+psycopg2://user:password@localhost/db",
                               execution_options={"isolation_level": "AUTOCOMMIT"})
 
     Session = sessionmaker() 
