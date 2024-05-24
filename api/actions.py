@@ -37,7 +37,7 @@ async def _get_joke_from_api(session):
         query_count_jokes = (func.count(Joke.id))
         count_jokes = await session.execute(query_count_jokes)
         count_jokes = count_jokes.scalar()
-        joke_id_random = random.randint(0, count_jokes)
+        joke_id_random = random.randint(1, count_jokes)
 
         joke = await joke_dal.get_joke_by_id(
             joke_id= joke_id_random
@@ -56,7 +56,7 @@ async def _get_or_create_user(user_id: str, session) -> ShowUser:
 
 
 async def _get_joke_by_id(
-        joke_id: UUID,
+        joke_id: int,
         session
 ) -> Union[ShowJoke, None]:
     async with session.begin():

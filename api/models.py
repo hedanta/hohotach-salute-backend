@@ -19,7 +19,7 @@ class CreateUser(BaseModel):
 
 
 class ShowJoke(BaseModel):
-    joke_id: uuid.UUID
+    joke_id: int
     content: str
     alias: str | None = None
 
@@ -30,7 +30,7 @@ class AddJoke(BaseModel):
 
 
 class FavJoke(BaseModel):
-    joke_id: uuid.UUID
+    joke_id: int
     alias: str | None = None
 
 
