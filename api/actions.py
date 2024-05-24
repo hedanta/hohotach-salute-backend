@@ -34,13 +34,15 @@ async def _get_joke_from_api(session):
     # TODO: сделать по нормальному (когда-нибудь)
     async with session.begin():
         joke_dal = JokeDAL(session)
-        count_jokes = session.query(func.count(Joke.id)).scalar()
+        query_count_jokes = (func.count(Joke.id))
+        count_jokes = await session.execute(query_count_jokes)
+        count_jokes = count_jokes.scalar()
         joke_id_random = random.randint(0, count_jokes)
 
         joke = await joke_dal.get_joke_by_id(
             joke_id= joke_id_random
         )
-        return joke.content
+        return joke.content if joke else joke
 
 
 

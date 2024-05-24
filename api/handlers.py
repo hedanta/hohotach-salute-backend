@@ -17,15 +17,16 @@ user_router = APIRouter()
 
 
 @user_router.get("/get_joke_from_api", response_model=None)
-async def get_joke():
-    content = await _get_joke_from_api()
-
-    while 'http' in content:
-        content = await _get_joke_from_api()
+async def get_joke(db: AsyncSession = Depends(get_db)):
+    content = await _get_joke_from_api(db)
+    
     if content:
+        while 'http' in content:
+            content = await _get_joke_from_api(db)
         joke_item = Joke(content=content)
     else:
-        joke_item = 'шуточки кончились'
+        joke_item = 'шутки кончились...'
+
     joke_json = jsonable_encoder(joke_item)
     return JSONResponse(content=joke_json)
 

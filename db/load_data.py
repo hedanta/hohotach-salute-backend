@@ -25,7 +25,7 @@ class JokeLoader:
     
     def load_data_to_db(self, df: pd.DataFrame):
         ''' Загружает всех клиентов из датафрейма df ''' 
-        jokes = df['text'].to_list()
+        jokes = df.query('target == 1')['text'].to_list()
         
         for joke in jokes:
             new_joke = Joke(content=joke, alias = self._generate_alias(joke))
@@ -47,7 +47,7 @@ if __name__ == '__main__':
     Session.configure(bind=engine) 
     session = Session()
 
-    df = pd.read_csv('jokes.csv')
+    df = pd.read_csv('markup_df_v2.csv')
 
     loader = JokeLoader(session)
 
