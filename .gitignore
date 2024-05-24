@@ -3,3 +3,9 @@ migrations
 __pycache__
 
 *.ini
+
+bin
+*.csv
+lib
+lib64
+pyvenv.cfg
