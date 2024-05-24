@@ -16,8 +16,8 @@ services:
       context: .
       dockerfile: dockerfile
     container_name: back-container
-    command: uvicorn main:app --host 0.0.0.0 --port 8000 
+    command: uvicorn main:app --host 0.0.0.0 --port 443 --ssl-keyfile='./privkey.pem' --ssl-certfile='./fullchain.pem'
     ports:
-      - 8000:8000
+      - 443:443
     depends_on:
       - db

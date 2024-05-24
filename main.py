@@ -2,6 +2,7 @@ import uvicorn
 from fastapi import FastAPI
 from api.handlers import *
 from starlette.middleware.cors import CORSMiddleware
+from fastapi.middleware.httpsredirect import HTTPSRedirectMiddleware
 
 app = FastAPI(title="hohotach")
 
@@ -23,4 +24,6 @@ main_api_router.include_router(user_router, prefix="/user", tags=["user"])
 app.include_router(main_api_router)
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="localhost", port=8000)
+    uvicorn.run(app, 
+                host="0.0.0.0", 
+                port=443)
