@@ -58,11 +58,12 @@ async def get_fav_jokes(
 
 @user_router.delete("/delete_fav_joke")
 async def delete_fav_joke(
-        joke_id: UUID,
+        joke_id: int,
+        user_id: str,
         db: AsyncSession = Depends(get_db)
 ):
     fav_joke_dal = FavJokeDAL(db)
-    await fav_joke_dal.delete_fav_joke(joke_id)
+    await fav_joke_dal.delete_fav_joke(joke_id = joke_id, user_id = user_id)
     print("Joke deleted successfully.")
 
 

@@ -68,11 +68,12 @@ class FavJokeDAL:
 
     async def delete_fav_joke(
             self,
-            joke_id: UUID
+            joke_id: int,
+            user_id: str
     ):
-        query = sqlalchemy.delete(Favourite).where(Favourite.joke_id == joke_id)
+        query = sqlalchemy.delete(Favourite).where(Favourite.joke_id == joke_id and Favourite.user_id == user_id)
         await self.db_session.execute(query)
-        await self.db_session.flush()
+        await self.db_session.commit()
 
 
 
@@ -80,7 +81,7 @@ class JokeDAL:
     def __init__(self, db_session: AsyncSession):
         self.db_session = db_session
 
-    async def get_joke_by_id(self, joke_id: UUID) -> Joke | None:
+    async def get_joke_by_id(self, joke_id: int) -> Joke | None:
         """
         Retrieve a joke from the database by its ID.
         """
@@ -112,7 +113,7 @@ class JokeDAL:
             await self.db_session.flush()  # flush is used here to get the ID if needed immediately after
             return new_joke
 
-    async def delete_joke(self, joke_id: UUID) -> None:
+    async def delete_joke(self, joke_id: int) -> None:
         """
         Delete a joke from the database by its ID.
         """
